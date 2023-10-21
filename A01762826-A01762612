@@ -1,0 +1,75 @@
+#include <iostream>
+#include <sstream>
+#include <vector>
+
+using namespace std;
+
+// Define a structure for points with x and y coordinates
+struct Point {
+    int x, y;
+};
+
+// Function to determine orientation of ordered triplet (p, q, r).
+// Time Complexity: O(1), Memory Compexity: O(1)
+int orientation(Point p, Point q, Point r) {
+    int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+
+    if (val == 0) return 0;  // Collinear
+    return (val > 0) ? 1 : 2;  // Clockwise or Counterclockwise
+}
+
+// function to check if line segment 'p1q1' and 'p2q2' intersect.
+// Time Complexity: O(1), Memory Compexity: O(1)
+bool doIntersect(Point p1, Point q1, Point p2, Point q2) {
+    // Find the orientations required for the general and special cases
+    int o1 = orientation(p1, q1, p2);
+    int o2 = orientation(p1, q1, q2);
+    int o3 = orientation(p2, q2, p1);
+    int o4 = orientation(p2, q2, q1);
+
+    // General case
+    if (o1 != o2 && o3 != o4) return true;
+
+    // Special cases
+    if (o1 == 0 && o2 == 0 && o3 == 0 && o4 == 0) {
+        return ((min(p1.x, q1.x) <= max(p2.x, q2.x) && max(p1.x, q1.x) >= min(p2.x, q2.x))
+                && (min(p1.y, q1.y) <= max(p2.y, q2.y) && max(p1.y, q1.y) >= min(p2.y, q2.y)));
+    }
+
+    return false;
+}
+
+int main() {
+    int n;  // Number of test cases
+    cin >> n;
+    cin.ignore();  // Remove newline from buffer
+
+    vector<bool> results;  // Store results of each test case
+
+    // Iterate over all test cases
+    // Time Complexity: O(n)
+    for(int i = 0; i < n; i++) {
+        string line;  // Line containing 4 points
+        getline(cin, line);
+        istringstream iss(line);
+        vector<Point> points(4);  // Store the 4 points of current test case
+
+        // Extract the 4 points from current line
+        for (int j = 0; j < 4; j++) {
+            char comma;  // Placeholder for the comma in input format
+            iss >> points[j].x >> comma >> points[j].y;
+        }
+
+        // Check if the two line segments intersect and store the result
+        results.push_back(doIntersect(points[0], points[1], points[2], points[3]));
+    }
+
+    // Print results for all test cases
+    // Time Complexity: O(n)
+    for (bool result : results) {
+        cout << (result ? "true" : "false") << endl;
+    }
+
+    return 0;
+}
+
